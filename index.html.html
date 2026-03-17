@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KlinikQual</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:#0f1f2e;--teal:#1a8a72;--teal-light:#e6f4f1;--teal-mid:#2db89a;
+    --gold-light:#fdf6ec;--red:#c0392b;--red-light:#fdf0ee;
+    --text:#1a1a2e;--text-mid:#4a5568;--text-light:#718096;
+    --border:#e2e8f0;--bg:#f8f9fc;--white:#ffffff;
+    --serif:'DM Serif Display',Georgia,serif;--sans:'DM Sans',system-ui,sans-serif;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:var(--sans);background:var(--bg);color:var(--text);font-size:15px;line-height:1.7;}
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(15,31,46,0.97);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:58px;border-bottom:1px solid rgba(255,255,255,0.08);}
+  .nav-logo{font-family:var(--serif);color:#fff;font-size:1.3rem;}
+  .nav-logo span{color:var(--teal-mid);}
+  .nav-links{display:flex;gap:0;align-items:center;}
+  .nav-links a{color:rgba(255,255,255,0.6);text-decoration:none;font-size:13px;padding:6px 14px;border-radius:6px;transition:all 0.2s;}
+  .nav-links a:hover{color:#fff;background:rgba(255,255,255,0.08);}
+  .lang-btns{display:flex;gap:4px;margin-left:16px;}
+  .lang-btn{padding:4px 10px;font-size:12px;font-weight:500;border-radius:6px;border:1px solid rgba(255,255,255,0.2);background:transparent;color:rgba(255,255,255,0.5);cursor:pointer;transition:all 0.2s;}
+  .lang-btn.active{background:var(--teal);color:#fff;border-color:var(--teal);}
+  .lang-btn:hover:not(.active){color:#fff;border-color:rgba(255,255,255,0.5);}
+  .hero{background:var(--navy);min-height:100vh;display:flex;align-items:center;padding:100px 2rem 4rem;position:relative;overflow:hidden;}
+  .hero::before{content:'';position:absolute;top:-200px;right:-200px;width:700px;height:700px;background:radial-gradient(circle,rgba(26,138,114,0.12) 0%,transparent 70%);pointer-events:none;}
+  .hero-inner{max-width:1100px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;}
+  .hero-eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--teal-mid);margin-bottom:1rem;font-weight:500;}
+  .hero h1{font-family:var(--serif);font-size:clamp(2.2rem,4vw,3.2rem);color:#fff;line-height:1.15;margin-bottom:1.5rem;}
+  .hero h1 em{color:var(--teal-mid);font-style:italic;}
+  .hero-desc{color:rgba(255,255,255,0.6);font-size:15px;line-height:1.8;margin-bottom:2rem;}
+  .hero-cta{display:flex;gap:12px;flex-wrap:wrap;}
+  .btn-primary{background:var(--teal);color:#fff;padding:11px 24px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:500;transition:all 0.2s;border:none;cursor:pointer;display:inline-block;}
+  .btn-primary:hover{background:var(--teal-mid);transform:translateY(-1px);}
+  .btn-ghost{background:transparent;color:rgba(255,255,255,0.7);padding:11px 24px;border-radius:8px;text-decoration:none;font-size:14px;border:1px solid rgba(255,255,255,0.2);transition:all 0.2s;cursor:pointer;display:inline-block;}
+  .btn-ghost:hover{border-color:rgba(255,255,255,0.5);color:#fff;}
+  .hero-stats{display:flex;flex-direction:column;gap:16px;}
+  .stat-card{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:1.25rem 1.5rem;transition:all 0.3s;}
+  .stat-card:hover{background:rgba(255,255,255,0.08);border-color:rgba(26,138,114,0.4);}
+  .stat-num{font-family:var(--serif);font-size:2rem;color:var(--teal-mid);}
+  .stat-label{font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px;}
+  section{padding:5rem 2rem;}
+  .container{max-width:1100px;margin:0 auto;}
+  .section-eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:0.75rem;font-weight:500;}
+  .section-title{font-family:var(--serif);font-size:clamp(1.6rem,3vw,2.2rem);color:var(--navy);margin-bottom:1rem;line-height:1.2;}
+  .section-sub{color:var(--text-mid);max-width:600px;font-size:15px;margin-bottom:3rem;}
+  .modules-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem;}
+  .module-card{background:var(--white);border-radius:14px;border:1px solid var(--border);padding:1.75rem;transition:all 0.25s;cursor:pointer;text-decoration:none;display:block;color:inherit;}
+  .module-card:hover{border-color:var(--teal);transform:translateY(-3px);box-shadow:0 12px 40px rgba(26,138,114,0.1);}
+  .module-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:1rem;}
+  .module-tag{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;font-weight:500;margin-bottom:6px;}
+  .module-title{font-family:var(--serif);font-size:1.2rem;margin-bottom:0.5rem;color:var(--navy);}
+  .module-desc{font-size:13px;color:var(--text-mid);line-height:1.6;}
+  .module-arrow{margin-top:1.25rem;font-size:13px;font-weight:500;display:flex;align-items:center;gap:4px;}
+  #iqtig{background:var(--white);}
+  .iqtig-grid{display:grid;grid-template-columns:1fr 2fr;gap:3rem;align-items:start;}
+  .iqtig-info h3{font-family:var(--serif);font-size:1.4rem;color:var(--navy);margin-bottom:1rem;}
+  .iqtig-info p{color:var(--text-mid);font-size:14px;line-height:1.8;margin-bottom:1rem;}
+  .iqtig-badge{display:inline-block;background:var(--teal-light);color:var(--teal);font-size:11px;font-weight:500;padding:4px 10px;border-radius:20px;margin-bottom:1rem;}
+  .qi-table{width:100%;border-collapse:collapse;font-size:13px;}
+  .qi-table th{text-align:left;padding:10px 12px;background:var(--bg);font-weight:500;font-size:11px;letter-spacing:0.5px;text-transform:uppercase;color:var(--text-light);border-bottom:1px solid var(--border);}
+  .qi-table td{padding:12px;border-bottom:1px solid var(--border);color:var(--text);vertical-align:top;}
+  .qi-table tr:hover td{background:var(--teal-light);}
+  .rpn-badge{display:inline-flex;align-items:center;gap:6px;}
+  .rpn-low{background:#e6f4f1;color:var(--teal);padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500;}
+  .rpn-mid{background:#fdf6ec;color:#b07d2a;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500;}
+  .rpn-high{background:var(--red-light);color:var(--red);padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500;}
+  #herramientas{background:var(--bg);}
+  .tools-tabs{display:flex;gap:4px;margin-bottom:2rem;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+  .tool-tab{padding:10px 18px;font-size:13px;color:var(--text-light);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.2s;background:none;border-left:none;border-right:none;border-top:none;}
+  .tool-tab.active{color:var(--teal);border-bottom-color:var(--teal);font-weight:500;}
+  .tool-panel{display:none;}
+  .tool-panel.active{display:block;}
+  .fmea-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-radius:10px;overflow:hidden;}
+  .fmea-cell{background:var(--white);padding:1rem;}
+  .fmea-cell.header{background:var(--navy);color:#fff;font-size:12px;font-weight:500;}
+  .fmea-cell.hl{background:var(--teal-light);}
+  .calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;}
+  .calc-label{font-size:12px;font-weight:500;color:var(--text-mid);margin-bottom:6px;display:block;text-transform:uppercase;letter-spacing:0.5px;}
+  .calc-val{font-size:13px;color:var(--teal);font-weight:500;}
+  .result-box{background:var(--navy);border-radius:12px;padding:1.5rem;color:#fff;}
+  .result-num{font-family:var(--serif);font-size:2.4rem;color:var(--teal-mid);}
+  .rb-item{display:flex;justify-content:space-between;font-size:12px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.7);}
+  .rb-val{color:#fff;font-weight:500;}
+  .acred-compare{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+  .acred-card{border-radius:12px;border:1px solid var(--border);overflow:hidden;}
+  .acred-header{padding:1.25rem 1.5rem;font-weight:500;font-size:15px;}
+  .acred-header.jci{background:#1a3a5c;color:#fff;}
+  .acred-header.iso{background:#2c3e50;color:#fff;}
+  .acred-header.ktq{background:var(--navy);color:#fff;}
+  .acred-body{padding:1rem 1.5rem;background:var(--white);}
+  .acred-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+  .acred-row:last-child{border-bottom:none;}
+  .acred-key{color:var(--text-light);font-size:12px;}
+  .acred-chk{color:var(--teal);font-weight:500;}
+  .acred-x{color:var(--red);}
+  .p4p-table{width:100%;border-collapse:collapse;font-size:13px;}
+  .p4p-table th{text-align:left;padding:10px 14px;background:var(--navy);color:rgba(255,255,255,0.7);font-size:11px;letter-spacing:0.5px;text-transform:uppercase;font-weight:500;}
+  .p4p-table td{padding:12px 14px;border-bottom:1px solid var(--border);color:var(--text);}
+  .p4p-table tr:hover td{background:var(--teal-light);}
+  .p4p-bar{height:6px;border-radius:3px;background:var(--border);width:100px;overflow:hidden;display:inline-block;vertical-align:middle;}
+  .p4p-fill{height:100%;border-radius:3px;}
+  #glosario{background:var(--white);}
+  .glosario-grid{display:grid;grid-template-columns:200px 1fr;gap:2rem;}
+  .glosario-cats button{display:block;width:100%;text-align:left;padding:8px 12px;background:none;border:none;cursor:pointer;font-size:13px;color:var(--text-mid);border-radius:6px;margin-bottom:2px;border-left:2px solid transparent;}
+  .glosario-cats button.active{color:var(--teal);border-left-color:var(--teal);background:var(--teal-light);font-weight:500;}
+  .glosario-cats button:hover:not(.active){background:var(--bg);}
+  .glosario-item{border-bottom:1px solid var(--border);padding:1.25rem 0;}
+  .glosario-term{font-weight:500;font-size:15px;color:var(--navy);margin-bottom:2px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .glosario-de{font-size:11px;background:var(--navy);color:rgba(255,255,255,0.8);padding:2px 8px;border-radius:4px;font-weight:400;}
+  .glosario-en{font-size:11px;background:var(--teal-light);color:var(--teal);padding:2px 8px;border-radius:4px;font-weight:400;}
+  .glosario-def{font-size:13px;color:var(--text-mid);line-height:1.6;margin-top:4px;}
+  footer{background:var(--navy);color:rgba(255,255,255,0.5);padding:3rem 2rem;text-align:center;font-size:13px;}
+  footer .footer-logo{font-family:var(--serif);font-size:1.4rem;color:#fff;margin-bottom:0.5rem;}
+  footer .footer-logo span{color:var(--teal-mid);}
+  @media(max-width:768px){
+    .hero-inner,.iqtig-grid,.calc-grid,.acred-compare,.glosario-grid{grid-template-columns:1fr;}
+    .fmea-grid{grid-template-columns:1fr 1fr;}
+    .nav-links .hide-mobile{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">Klinik<span>Qual</span></div>
+  <div class="nav-links">
+    <a href="#iqtig" class="hide-mobile" data-i="nav_qi">Indicadores QI</a>
+    <a href="#herramientas" class="hide-mobile" data-i="nav_tools">Herramientas</a>
+    <a href="#glosario" class="hide-mobile" data-i="nav_glos">Glosario</a>
+    <div class="lang-btns">
+      <button class="lang-btn active" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" onclick="setLang('de')">DE</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="inicio">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-eyebrow" data-i="hero_eyebrow">Calidad &amp; Gestión de Riesgos · Hospitales Alemanes</div>
+      <h1 data-i="hero_h1">La guía en español sobre <em>calidad hospitalaria</em> en Alemania</h1>
+      <p class="hero-desc" data-i="hero_desc">Indicadores IQTIG, herramientas de gestión de riesgos clínicos, acreditación hospitalaria y economía de la calidad — todo en español, con contexto alemán.</p>
+      <div class="hero-cta">
+        <a href="#iqtig" class="btn-primary" data-i="hero_cta1">Explorar indicadores QI</a>
+        <a href="#herramientas" class="btn-ghost" data-i="hero_cta2">Ver herramientas</a>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-card">
+        <div class="stat-num">~5%</div>
+        <div class="stat-label" data-i="stat1">Pacientes hospitalizados sufren eventos adversos prevenibles en Alemania</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">€2.4 Mrd</div>
+        <div class="stat-label" data-i="stat2">Costo anual estimado de errores médicos en el sistema hospitalario alemán</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">30+</div>
+        <div class="stat-label" data-i="stat3">Indicadores de calidad obligatorios monitoreados por el IQTIG</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MÓDULOS -->
+<section style="background:var(--white);padding:4rem 2rem;">
+  <div class="container">
+    <div class="section-eyebrow" data-i="mod_eyebrow">Módulos de la plataforma</div>
+    <h2 class="section-title" data-i="mod_title">Todo lo que necesitas saber</h2>
+    <p class="section-sub" data-i="mod_sub">Desde los indicadores del IQTIG hasta el cálculo del costo de eventos adversos — en un solo lugar.</p>
+    <div class="modules-grid">
+      <a href="#iqtig" class="module-card">
+        <div class="module-icon" style="background:#e6f4f1;">📊</div>
+        <div class="module-tag" style="color:var(--teal);" data-i="m1_tag">Sistema IQTIG</div>
+        <div class="module-title" data-i="m1_title">Indicadores de Calidad Hospitalaria</div>
+        <div class="module-desc" data-i="m1_desc">Cómo Alemania mide y publica la calidad asistencial. Qué significa cada indicador QI y cómo se usan.</div>
+        <div class="module-arrow" style="color:var(--teal);" data-i="m1_arrow">Ver indicadores →</div>
+      </a>
+      <a href="#herramientas" class="module-card">
+        <div class="module-icon" style="background:#fdf6ec;">⚠️</div>
+        <div class="module-tag" style="color:#b07d2a;" data-i="m2_tag">Riesgo Clínico</div>
+        <div class="module-title" data-i="m2_title">FMEA &amp; Análisis de Causa Raíz</div>
+        <div class="module-desc" data-i="m2_desc">Herramientas de gestión de riesgos usadas en hospitales alemanes: FMEA, RCA y análisis de eventos adversos.</div>
+        <div class="module-arrow" style="color:#b07d2a;" data-i="m2_arrow">Ver herramientas →</div>
+      </a>
+      <a href="#herramientas" class="module-card">
+        <div class="module-icon" style="background:var(--red-light);">💶</div>
+        <div class="module-tag" style="color:var(--red);" data-i="m3_tag">Economía</div>
+        <div class="module-title" data-i="m3_title">Costo de Eventos Adversos</div>
+        <div class="module-desc" data-i="m3_desc">Calculadora interactiva del impacto económico de los errores médicos en un hospital alemán.</div>
+        <div class="module-arrow" style="color:var(--red);" data-i="m3_arrow">Calcular →</div>
+      </a>
+      <a href="#herramientas" class="module-card">
+        <div class="module-icon" style="background:#e6f0fb;">🏅</div>
+        <div class="module-tag" style="color:#1a5fa0;" data-i="m4_tag">Acreditación</div>
+        <div class="module-title" data-i="m4_title">JCI vs ISO vs KTQ</div>
+        <div class="module-desc" data-i="m4_desc">Comparador de los principales sistemas de acreditación hospitalaria usados en Alemania y Europa.</div>
+        <div class="module-arrow" style="color:#1a5fa0;" data-i="m4_arrow">Comparar →</div>
+      </a>
+      <a href="#herramientas" class="module-card">
+        <div class="module-icon" style="background:#e6f4f1;">🎯</div>
+        <div class="module-tag" style="color:var(--teal);" data-i="m5_tag">P4P</div>
+        <div class="module-title" data-i="m5_title">Pago por Desempeño</div>
+        <div class="module-desc" data-i="m5_desc">Cómo se vincula la calidad hospitalaria con los pagos en Alemania y otros sistemas europeos.</div>
+        <div class="module-arrow" style="color:var(--teal);" data-i="m5_arrow">Explorar →</div>
+      </a>
+      <a href="#glosario" class="module-card">
+        <div class="module-icon" style="background:#f0e6f4;">📚</div>
+        <div class="module-tag" style="color:#7b2fa0;" data-i="m6_tag">Glosario</div>
+        <div class="module-title" data-i="m6_title">Terminología ES · DE · EN</div>
+        <div class="module-desc" data-i="m6_desc">Términos clave de calidad y gestión de riesgos en español, con sus equivalentes en alemán e inglés.</div>
+        <div class="module-arrow" style="color:#7b2fa0;" data-i="m6_arrow">Ver glosario →</div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- IQTIG -->
+<section id="iqtig">
+  <div class="container">
+    <div class="section-eyebrow" data-i="iqtig_eyebrow">Sistema Alemán de Calidad</div>
+    <h2 class="section-title" data-i="iqtig_title">Indicadores QI del IQTIG</h2>
+    <p class="section-sub" data-i="iqtig_sub">El IQTIG publica anualmente los indicadores de calidad de todos los hospitales alemanes obligados a reportar.</p>
+    <div class="iqtig-grid">
+      <div class="iqtig-info">
+        <div class="iqtig-badge">IQTIG 2022</div>
+        <h3 data-i="iqtig_h3">¿Cómo funciona?</h3>
+        <p data-i="iqtig_p1">Cada hospital reporta datos clínicos por procedimiento. El IQTIG calcula indicadores y los compara con referencias nacionales. Los resultados son públicos en <strong>Qualitätsberichte</strong>.</p>
+        <p data-i="iqtig_p2">Los indicadores tienen un <strong>Referenzwert</strong> (valor de referencia). Si un hospital lo supera, debe justificarlo en un proceso llamado <em>Stellungnahmeverfahren</em>.</p>
+      </div>
+      <div>
+        <table class="qi-table">
+          <thead>
+            <tr>
+              <th data-i="th_indicator">Indicador QI</th>
+              <th data-i="th_area">Área</th>
+              <th data-i="th_ref">Referenzwert</th>
+              <th data-i="th_type">Tipo</th>
+              <th data-i="th_trend">Tendencia</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Sterblichkeit nach Herzinfarkt</strong><br><span style="font-size:12px;color:var(--text-light);" data-i="qi1_sub">Mortalidad post-infarto</span></td>
+              <td data-i="qi1_area">Cardiología</td><td>≤ 12%</td>
+              <td><span class="rpn-high" data-i="qi_result">Resultado</span></td>
+              <td><span style="color:var(--teal);">↓ <span data-i="qi_improve">mejora</span></span></td>
+            </tr>
+            <tr>
+              <td><strong>Kaiserschnittrate</strong><br><span style="font-size:12px;color:var(--text-light);" data-i="qi2_sub">Tasa de cesáreas</span></td>
+              <td data-i="qi2_area">Obstetricia</td><td>≤ 30%</td>
+              <td><span class="rpn-mid" data-i="qi_process">Proceso</span></td>
+              <td><span style="color:var(--text-light);">→ <span data-i="qi_stable">estable</span></span></td>
+            </tr>
+            <tr>
+              <td><strong>Wundinfektionsrate</strong><br><span style="font-size:12px;color:var(--text-light);" data-i="qi3_sub">Tasa de infecciones de herida</span></td>
+              <td data-i="qi3_area">Cirugía</td><td>≤ 2%</td>
+              <td><span class="rpn-high" data-i="qi_result2">Resultado</span></td>
+              <td><span style="color:var(--teal);">↓ <span data-i="qi_improve2">mejora</span></span></td>
+            </tr>
+            <tr>
+              <td><strong>Hüft-Endoprothese</strong><br><span style="font-size:12px;color:var(--text-light);" data-i="qi4_sub">Complicaciones prótesis de cadera</span></td>
+              <td data-i="qi4_area">Ortopedia</td><td>≤ 3%</td>
+              <td><span class="rpn-high" data-i="qi_result3">Resultado</span></td>
+              <td><span style="color:var(--teal);">↓ <span data-i="qi_improve3">mejora</span></span></td>
+            </tr>
+            <tr>
+              <td><strong>Thromboseprophylaxe</strong><br><span style="font-size:12px;color:var(--text-light);" data-i="qi5_sub">Profilaxis antitrombótica</span></td>
+              <td data-i="qi5_area">Med. Interna</td><td>≥ 90%</td>
+              <td><span class="rpn-low" data-i="qi_process2">Proceso</span></td>
+              <td><span style="color:var(--teal);">↑ <span data-i="qi_improve4">mejora</span></span></td>
+            </tr>
+          </tbody>
+        </table>
+        <p style="font-size:12px;color:var(--text-light);margin-top:10px;" data-i="iqtig_source">Fuente: IQTIG Bundesauswertung 2022. Valores orientativos.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HERRAMIENTAS -->
+<section id="herramientas">
+  <div class="container">
+    <div class="section-eyebrow" data-i="tools_eyebrow">Herramientas Interactivas</div>
+    <h2 class="section-title" data-i="tools_title">Gestión de riesgos &amp; economía de la calidad</h2>
+    <p class="section-sub" data-i="tools_sub">Aprende cómo se aplican estas herramientas en la práctica hospitalaria alemana.</p>
+    <div class="tools-tabs">
+      <button class="tool-tab active" onclick="showTool('fmea',this)" data-i="tab_fmea">FMEA</button>
+      <button class="tool-tab" onclick="showTool('calc',this)" data-i="tab_calc">Calculadora de costos</button>
+      <button class="tool-tab" onclick="showTool('acred',this)" data-i="tab_acred">Acreditación</button>
+      <button class="tool-tab" onclick="showTool('p4p',this)" data-i="tab_p4p">Pago por desempeño (P4P)</button>
+    </div>
+
+    <!-- FMEA -->
+    <div class="tool-panel active" id="tool-fmea">
+      <p style="font-size:14px;color:var(--text-mid);margin-bottom:1.5rem;" data-i="fmea_intro">El <strong>FMEA</strong> identifica fallos potenciales antes de que ocurran. Cada fallo se puntúa por <em>Severidad × Ocurrencia × Detección</em> = RPN.</p>
+      <div class="fmea-grid">
+        <div class="fmea-cell header" data-i="fmea_h1">Proceso / Fallo potencial</div>
+        <div class="fmea-cell header">S × O × D</div>
+        <div class="fmea-cell header">RPN</div>
+        <div class="fmea-cell header" data-i="fmea_h4">Medida correctiva</div>
+        <div class="fmea-cell"><strong data-i="fmea_r1a">Administración de medicamento</strong><br><span style="font-size:12px;color:var(--text-light);" data-i="fmea_r1b">Dosis incorrecta</span></div>
+        <div class="fmea-cell">9 × 3 × 2</div>
+        <div class="fmea-cell"><span class="rpn-high">RPN 54</span></div>
+        <div class="fmea-cell" data-i="fmea_r1c">Doble verificación enfermera + sistema barcode</div>
+        <div class="fmea-cell hl"><strong data-i="fmea_r2a">Identificación del paciente</strong><br><span style="font-size:12px;color:var(--text-light);" data-i="fmea_r2b">Confusión de pacientes</span></div>
+        <div class="fmea-cell hl">10 × 2 × 1</div>
+        <div class="fmea-cell hl"><span class="rpn-mid">RPN 20</span></div>
+        <div class="fmea-cell hl" data-i="fmea_r2c">Pulsera con código + protocolo verbal de 2 identificadores</div>
+        <div class="fmea-cell"><strong data-i="fmea_r3a">Desinfección quirúrgica</strong><br><span style="font-size:12px;color:var(--text-light);" data-i="fmea_r3b">Protocolo incompleto</span></div>
+        <div class="fmea-cell">8 × 2 × 3</div>
+        <div class="fmea-cell"><span class="rpn-mid">RPN 48</span></div>
+        <div class="fmea-cell" data-i="fmea_r3c">Checklist WHO quirúrgico obligatorio</div>
+        <div class="fmea-cell"><strong data-i="fmea_r4a">Transferencia de turno</strong><br><span style="font-size:12px;color:var(--text-light);" data-i="fmea_r4b">Pérdida de información crítica</span></div>
+        <div class="fmea-cell">7 × 4 × 2</div>
+        <div class="fmea-cell"><span class="rpn-high">RPN 56</span></div>
+        <div class="fmea-cell" data-i="fmea_r4c">Protocolo SBAR estandarizado</div>
+        <div class="fmea-cell"><strong data-i="fmea_r5a">Caídas del paciente</strong><br><span style="font-size:12px;color:var(--text-light);" data-i="fmea_r5b">Sin evaluación de riesgo</span></div>
+        <div class="fmea-cell">6 × 3 × 2</div>
+        <div class="fmea-cell"><span class="rpn-low">RPN 36</span></div>
+        <div class="fmea-cell" data-i="fmea_r5c">Escala de Morse al ingreso + cama baja</div>
+      </div>
+    </div>
+
+    <!-- CALC -->
+    <div class="tool-panel" id="tool-calc">
+      <p style="font-size:14px;color:var(--text-mid);margin-bottom:1.5rem;" data-i="calc_intro">Estima el impacto económico anual de los eventos adversos en un hospital. Basado en metodología OECD y estudios alemanes.</p>
+      <div class="calc-grid">
+        <div>
+          <div style="margin-bottom:1.25rem;">
+            <label class="calc-label" data-i="calc_camas">Camas hospitalarias</label>
+            <input type="range" style="width:100%;margin-bottom:4px;" min="50" max="2000" value="400" step="50" id="c-camas" oninput="calcCost()">
+            <div class="calc-val" id="v-camas">400 <span data-i="calc_beds_unit">camas</span></div>
+          </div>
+          <div style="margin-bottom:1.25rem;">
+            <label class="calc-label" data-i="calc_ocup">Tasa de ocupación (%)</label>
+            <input type="range" style="width:100%;margin-bottom:4px;" min="50" max="100" value="80" step="1" id="c-ocup" oninput="calcCost()">
+            <div class="calc-val" id="v-ocup">80%</div>
+          </div>
+          <div style="margin-bottom:1.25rem;">
+            <label class="calc-label" data-i="calc_est">Estancia media (días)</label>
+            <input type="range" style="width:100%;margin-bottom:4px;" min="3" max="12" value="6" step="0.5" id="c-estancia" oninput="calcCost()">
+            <div class="calc-val" id="v-estancia">6 <span data-i="calc_days_unit">días</span></div>
+          </div>
+          <div style="margin-bottom:1.25rem;">
+            <label class="calc-label" data-i="calc_ea">Tasa de eventos adversos (%)</label>
+            <input type="range" style="width:100%;margin-bottom:4px;" min="1" max="15" value="5" step="0.5" id="c-ea" oninput="calcCost()">
+            <div class="calc-val" id="v-ea">5%</div>
+          </div>
+          <div style="margin-bottom:1.25rem;">
+            <label class="calc-label" data-i="calc_prev">% Eventos adversos prevenibles</label>
+            <input type="range" style="width:100%;margin-bottom:4px;" min="20" max="80" value="50" step="5" id="c-prev" oninput="calcCost()">
+            <div class="calc-val" id="v-prev">50%</div>
+          </div>
+        </div>
+        <div class="result-box">
+          <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:1px;" data-i="calc_result_label">Costo anual estimado</div>
+          <div class="result-num" id="r-total">€4.2M</div>
+          <div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:4px;" data-i="calc_result_sub">eventos adversos totales</div>
+          <div style="margin-top:1.25rem;display:flex;flex-direction:column;gap:8px;">
+            <div class="rb-item"><span data-i="r_pac">Pacientes/año</span><span class="rb-val" id="r-pac">—</span></div>
+            <div class="rb-item"><span data-i="r_ea">Eventos adversos/año</span><span class="rb-val" id="r-ea">—</span></div>
+            <div class="rb-item"><span data-i="r_prev">De los cuales prevenibles</span><span class="rb-val" id="r-prev">—</span></div>
+            <div class="rb-item"><span data-i="r_dias">Días extra hospitalización</span><span class="rb-val" id="r-dias">—</span></div>
+            <div class="rb-item"><span data-i="r_ahorro">Costo prevenible (ahorro posible)</span><span class="rb-val" id="r-ahorro" style="color:var(--teal-mid);">—</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACRED -->
+    <div class="tool-panel" id="tool-acred">
+      <p style="font-size:14px;color:var(--text-mid);margin-bottom:1.5rem;" data-i="acred_intro">Comparativa de los tres sistemas de acreditación hospitalaria más relevantes en Alemania.</p>
+      <div class="acred-compare">
+        <div class="acred-card">
+          <div class="acred-header jci">🌐 JCI<br><span style="font-size:12px;opacity:0.7;">Joint Commission International</span></div>
+          <div class="acred-body">
+            <div class="acred-row"><span class="acred-key" data-i="ac_origin">Origen</span><span data-i="ac_jci_origin">EE.UU. · Global</span></div>
+            <div class="acred-row"><span class="acred-key" data-i="ac_std">Estándares</span><span>1.200+</span></div>
+            <div class="acred-row"><span class="acred-key" data-i="ac_dur">Duración</span><span data-i="ac_3y">3 años</span></div>
+            <div class="acred-row"><span class="acred-key" data-i="ac_cost">Costo aprox.</span><span>€80k–150k</span></div>
+            <div class="acred-row"><span class="acred-key" data-i="ac_intl">Reconoc. intl.</span><span class="acred-chk" data-i="ac_high">✓ Muy alto</span></div>
+            <div class="acred-row"><span class="acred-key" data-i="ac_safety">Seguridad</span><span class="acred-chk" data-i="ac_yes">✓ Sí</span></div>
+            <div class="acred-row"><span class="acred-key" data-i="ac_de">Adaptado a DE</span><span class="acred-x" data-i="ac_partial">✗ Parcial</span></div>
+            <div class="acred-row"><span class="acred-key" data-i="ac_hosp">Hospitales DE</span><span>~40</span></div>
+          </div>
+        </div>
+        <div class="acred-card">
+          <div class="acred-header iso">📋 DIN EN ISO 9001</div>
+          <div class="acred-body">
+            <div class="acred-row"><span class="acred-key" data-i="ac_origin2">Origen</span><span data-i="ac_intl_label">Internacional</span></div>
+            <div class="acred-row"><span class="acred-key" data-i="ac_std2">Estándares</span><span data-i="ac_proc">Procesos / Sistema</span></div>
+            <div class="acred-row"><span class="acred-key" data-i="ac_dur2">Duración</span><span data-i="ac_3y2">3 años</span></div>
+            <div class="acred-row"><span class="acred-key" data-i="ac_cost2">Costo aprox.</span><span>€10k–40k</span></div>
+            <div class="acred-row"><span class="acred-key" data-i="ac_intl2">Reconoc. intl.</span><span class="acred-chk" data-i="ac_high2">✓ Alto</span></div>
+            <div class="acred-row"><span class="acred-key" data-i="ac_safety2">Seguridad</span><span class="acred-x" data-i="ac_no">✗ No específico</span></div>
+            <div class="acred-row"><span class="acred-key" data-i="ac_de2">Adaptado a DE</span><span class="acred-chk" data-i="ac_yes2">✓ Sí</span></div>
+            <div class="acred-row"><span class="acred-key" data-i="ac_hosp2">Hospitales DE</span><span>~600</span></div>
+          </div>
+        </div>
+        <div class="acred-card">
+          <div class="acred-header ktq">🇩🇪 KTQ</div>
+          <div class="acred-body">
+            <div class="acred-row"><span class="acred-key" data-i="ac_origin3">Origen</span><span data-i="ac_de_label">Alemania</span></div>
+            <div class="acred-row"><span class="acred-key" data-i="ac_std3">Estándares</span><span data-i="ac_ktq_std">63 criterios clínicos</span></div>
+            <div class="acred-row"><span class="acred-key" data-i="ac_dur3">Duración</span><span data-i="ac_3y3">3 años</span></div>
+            <div class="acred-row"><span class="acred-key" data-i="ac_cost3">Costo aprox.</span><span>€25k–60k</span></div>
+            <div class="acred-row"><span class="acred-key" data-i="ac_intl3">Reconoc. intl.</span><span class="acred-x" data-i="ac_eu">✗ Solo Europa</span></div>
+            <div class="acred-row"><span class="acred-key" data-i="ac_safety3">Seguridad</span><span class="acred-chk" data-i="ac_yes3">✓ Sí</span></div>
+            <div class="acred-row"><span class="acred-key" data-i="ac_de3">Adaptado a DE</span><span class="acred-chk" data-i="ac_full">✓ Totalmente</span></div>
+            <div class="acred-row"><span class="acred-key" data-i="ac_hosp3">Hospitales DE</span><span>~400</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- P4P -->
+    <div class="tool-panel" id="tool-p4p">
+      <p style="font-size:14px;color:var(--text-mid);margin-bottom:1.5rem;" data-i="p4p_intro">El pago por desempeño vincula los pagos hospitalarios con indicadores de calidad. Comparativa europea:</p>
+      <table class="p4p-table">
+        <thead>
+          <tr>
+            <th data-i="p4p_country">País</th>
+            <th data-i="p4p_system">Sistema</th>
+            <th data-i="p4p_pct">% pago a calidad</th>
+            <th data-i="p4p_indicators">Indicadores</th>
+            <th data-i="p4p_maturity">Madurez</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>🇩🇪 <strong data-i="p4p_de">Alemania</strong></td><td>DRG + Qualitätszuschläge</td><td><div class="p4p-bar"><div class="p4p-fill" style="width:20%;background:var(--teal);"></div></div> ~2%</td><td>IQTIG, Mindestmengen</td><td><span class="rpn-mid" data-i="p4p_dev">En desarrollo</span></td></tr>
+          <tr><td>🇬🇧 <strong data-i="p4p_uk">Reino Unido</strong></td><td>NHS CQUIN / QOF</td><td><div class="p4p-bar"><div class="p4p-fill" style="width:60%;background:var(--teal);"></div></div> ~6%</td><td data-i="p4p_uk_ind">Readmisiones, PROMS</td><td><span class="rpn-high" data-i="p4p_adv">Avanzado</span></td></tr>
+          <tr><td>🇫🇷 <strong data-i="p4p_fr">Francia</strong></td><td>IFAQ</td><td><div class="p4p-bar"><div class="p4p-fill" style="width:35%;background:var(--teal);"></div></div> ~3.5%</td><td data-i="p4p_fr_ind">Satisfacción, seguridad</td><td><span class="rpn-mid" data-i="p4p_mid">Intermedio</span></td></tr>
+          <tr><td>🇳🇱 <strong data-i="p4p_nl">Países Bajos</strong></td><td>DBC + Value-Based</td><td><div class="p4p-bar"><div class="p4p-fill" style="width:50%;background:var(--teal);"></div></div> ~5%</td><td data-i="p4p_nl_ind">Outcomes, PROMS</td><td><span class="rpn-high" data-i="p4p_adv2">Avanzado</span></td></tr>
+          <tr><td>🇪🇸 <strong data-i="p4p_es">España</strong></td><td>SNS variable</td><td><div class="p4p-bar"><div class="p4p-fill" style="width:10%;background:var(--teal);"></div></div> ~1%</td><td data-i="p4p_es_ind">Incipiente</td><td><span class="rpn-low" data-i="p4p_init">Inicial</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- GLOSARIO -->
+<section id="glosario">
+  <div class="container">
+    <div class="section-eyebrow" data-i="glos_eyebrow">Terminología</div>
+    <h2 class="section-title" data-i="glos_title">Glosario trilingüe</h2>
+    <p class="section-sub" data-i="glos_sub">Términos esenciales de calidad y gestión de riesgos en español, alemán e inglés.</p>
+    <div class="glosario-grid">
+      <div class="glosario-cats">
+        <button class="active" onclick="filterGlosario('all',this)" data-i="gcat_all">Todos</button>
+        <button onclick="filterGlosario('riesgo',this)" data-i="gcat_risk">Gestión de Riesgos</button>
+        <button onclick="filterGlosario('calidad',this)" data-i="gcat_qual">Calidad</button>
+        <button onclick="filterGlosario('econ',this)" data-i="gcat_econ">Economía</button>
+        <button onclick="filterGlosario('acred',this)" data-i="gcat_acred">Acreditación</button>
+      </div>
+      <div id="glosario-list"></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">Klinik<span>Qual</span></div>
+  <p style="margin-top:0.5rem;" data-i="footer_desc">Plataforma educativa sobre calidad hospitalaria alemana en español.</p>
+  <p style="margin-top:0.5rem;font-size:12px;" data-i="footer_source">Datos: IQTIG 2022 · OECD Health Statistics · Bundesgesundheitsministerium</p>
+  <div style="margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,0.1);">
+    <p style="font-size:13px;color:rgba(255,255,255,0.7);" data-i="footer_by">Creado por <strong style="color:#fff;">Dina Rocío Tobar Morales</strong></p>
+    <p style="font-size:13px;margin-top:4px;"><a href="mailto:d.rociotobar19@gmail.com" style="color:var(--teal-mid);text-decoration:none;">d.rociotobar19@gmail.com</a></p>
+    <p style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:4px;" data-i="footer_role">Estudiante de Economía de la Salud · Alemania</p>
+  </div>
+</footer>
+
+<script>
+// ── TRANSLATIONS ──────────────────────────────────────────────
+const T = {
+  es: {
+    nav_qi:"Indicadores QI", nav_tools:"Herramientas", nav_glos:"Glosario",
+    hero_eyebrow:"Calidad & Gestión de Riesgos · Hospitales Alemanes",
+    hero_h1:'La guía en español sobre <em>calidad hospitalaria</em> en Alemania',
+    hero_desc:"Indicadores IQTIG, herramientas de gestión de riesgos clínicos, acreditación hospitalaria y economía de la calidad — todo en español, con contexto alemán.",
+    hero_cta1:"Explorar indicadores QI", hero_cta2:"Ver herramientas",
+    stat1:"Pacientes hospitalizados sufren eventos adversos prevenibles en Alemania",
+    stat2:"Costo anual estimado de errores médicos en el sistema hospitalario alemán",
+    stat3:"Indicadores de calidad obligatorios monitoreados por el IQTIG",
+    mod_eyebrow:"Módulos de la plataforma", mod_title:"Todo lo que necesitas saber",
+    mod_sub:"Desde los indicadores del IQTIG hasta el cálculo del costo de eventos adversos — en un solo lugar.",
+    m1_tag:"Sistema IQTIG", m1_title:"Indicadores de Calidad Hospitalaria",
+    m1_desc:"Cómo Alemania mide y publica la calidad asistencial.", m1_arrow:"Ver indicadores →",
+    m2_tag:"Riesgo Clínico", m2_title:"FMEA & Análisis de Causa Raíz",
+    m2_desc:"Herramientas de gestión de riesgos usadas en hospitales alemanes.", m2_arrow:"Ver herramientas →",
+    m3_tag:"Economía", m3_title:"Costo de Eventos Adversos",
+    m3_desc:"Calculadora interactiva del impacto económico de los errores médicos.", m3_arrow:"Calcular →",
+    m4_tag:"Acreditación", m4_title:"JCI vs ISO vs KTQ",
+    m4_desc:"Comparador de los principales sistemas de acreditación hospitalaria.", m4_arrow:"Comparar →",
+    m5_tag:"P4P", m5_title:"Pago por Desempeño",
+    m5_desc:"Cómo se vincula la calidad hospitalaria con los pagos en Alemania.", m5_arrow:"Explorar →",
+    m6_tag:"Glosario", m6_title:"Terminología ES · DE · EN",
+    m6_desc:"Términos clave de calidad y gestión de riesgos en tres idiomas.", m6_arrow:"Ver glosario →",
+    iqtig_eyebrow:"Sistema Alemán de Calidad", iqtig_title:"Indicadores QI del IQTIG",
+    iqtig_sub:"El IQTIG publica anualmente los indicadores de calidad de todos los hospitales alemanes.",
+    iqtig_h3:"¿Cómo funciona?",
+    iqtig_p1:"Cada hospital reporta datos clínicos por procedimiento. El IQTIG calcula indicadores y los compara con referencias nacionales. Los resultados son públicos en <strong>Qualitätsberichte</strong>.",
+    iqtig_p2:"Los indicadores tienen un <strong>Referenzwert</strong> (valor de referencia). Si un hospital lo supera, debe justificarlo en un proceso llamado <em>Stellungnahmeverfahren</em>.",
+    th_indicator:"Indicador QI", th_area:"Área", th_ref:"Referenzwert", th_type:"Tipo", th_trend:"Tendencia",
+    qi1_sub:"Mortalidad post-infarto", qi1_area:"Cardiología",
+    qi2_sub:"Tasa de cesáreas", qi2_area:"Obstetricia",
+    qi3_sub:"Tasa de infecciones de herida", qi3_area:"Cirugía",
+    qi4_sub:"Complicaciones prótesis de cadera", qi4_area:"Ortopedia",
+    qi5_sub:"Profilaxis antitrombótica", qi5_area:"Med. Interna",
+    qi_result:"Resultado", qi_result2:"Resultado", qi_result3:"Resultado",
+    qi_process:"Proceso", qi_process2:"Proceso",
+    qi_improve:"mejora", qi_improve2:"mejora", qi_improve3:"mejora", qi_improve4:"mejora",
+    qi_stable:"estable", iqtig_source:"Fuente: IQTIG Bundesauswertung 2022. Valores orientativos.",
+    tools_eyebrow:"Herramientas Interactivas", tools_title:"Gestión de riesgos & economía de la calidad",
+    tools_sub:"Aprende cómo se aplican estas herramientas en la práctica hospitalaria alemana.",
+    tab_fmea:"FMEA", tab_calc:"Calculadora de costos", tab_acred:"Acreditación", tab_p4p:"Pago por desempeño (P4P)",
+    fmea_intro:"El <strong>FMEA</strong> identifica fallos potenciales antes de que ocurran. Cada fallo se puntúa por <em>Severidad × Ocurrencia × Detección</em> = RPN.",
+    fmea_h1:"Proceso / Fallo potencial", fmea_h4:"Medida correctiva",
+    fmea_r1a:"Administración de medicamento", fmea_r1b:"Dosis incorrecta", fmea_r1c:"Doble verificación enfermera + barcode",
+    fmea_r2a:"Identificación del paciente", fmea_r2b:"Confusión de pacientes", fmea_r2c:"Pulsera con código + protocolo verbal",
+    fmea_r3a:"Desinfección quirúrgica", fmea_r3b:"Protocolo incompleto", fmea_r3c:"Checklist WHO quirúrgico",
+    fmea_r4a:"Transferencia de turno", fmea_r4b:"Pérdida de información crítica", fmea_r4c:"Protocolo SBAR estandarizado",
+    fmea_r5a:"Caídas del paciente", fmea_r5b:"Sin evaluación de riesgo", fmea_r5c:"Escala de Morse + cama baja",
+    calc_intro:"Estima el impacto económico anual de los eventos adversos en un hospital.",
+    calc_camas:"Camas hospitalarias", calc_beds_unit:"camas",
+    calc_ocup:"Tasa de ocupación (%)", calc_est:"Estancia media (días)", calc_days_unit:"días",
+    calc_ea:"Tasa de eventos adversos (%)", calc_prev:"% Eventos adversos prevenibles",
+    calc_result_label:"Costo anual estimado", calc_result_sub:"eventos adversos totales",
+    r_pac:"Pacientes/año", r_ea:"Eventos adversos/año", r_prev:"De los cuales prevenibles",
+    r_dias:"Días extra hospitalización", r_ahorro:"Costo prevenible (ahorro posible)",
+    acred_intro:"Comparativa de los tres sistemas de acreditación hospitalaria más relevantes en Alemania.",
+    ac_origin:"Origen", ac_origin2:"Origen", ac_origin3:"Origen",
+    ac_std:"Estándares", ac_std2:"Estándares", ac_std3:"Estándares",
+    ac_dur:"Duración", ac_dur2:"Duración", ac_dur3:"Duración",
+    ac_cost:"Costo aprox.", ac_cost2:"Costo aprox.", ac_cost3:"Costo aprox.",
+    ac_intl:"Reconoc. intl.", ac_intl2:"Reconoc. intl.", ac_intl3:"Reconoc. intl.",
+    ac_safety:"Seguridad", ac_safety2:"Seguridad", ac_safety3:"Seguridad",
+    ac_de:"Adaptado a DE", ac_de2:"Adaptado a DE", ac_de3:"Adaptado a DE",
+    ac_hosp:"Hospitales DE", ac_hosp2:"Hospitales DE", ac_hosp3:"Hospitales DE",
+    ac_jci_origin:"EE.UU. · Global", ac_intl_label:"Internacional", ac_de_label:"Alemania",
+    ac_proc:"Procesos / Sistema", ac_ktq_std:"63 criterios clínicos",
+    ac_3y:"3 años", ac_3y2:"3 años", ac_3y3:"3 años",
+    ac_high:"✓ Muy alto", ac_high2:"✓ Alto", ac_yes:"✓ Sí", ac_yes2:"✓ Sí", ac_yes3:"✓ Sí",
+    ac_partial:"✗ Parcial", ac_no:"✗ No específico", ac_eu:"✗ Solo Europa", ac_full:"✓ Totalmente",
+    p4p_intro:"El pago por desempeño vincula los pagos hospitalarios con indicadores de calidad. Comparativa europea:",
+    p4p_country:"País", p4p_system:"Sistema", p4p_pct:"% pago a calidad", p4p_indicators:"Indicadores", p4p_maturity:"Madurez",
+    p4p_de:"Alemania", p4p_uk:"Reino Unido", p4p_fr:"Francia", p4p_nl:"Países Bajos", p4p_es:"España",
+    p4p_uk_ind:"Readmisiones, PROMS", p4p_fr_ind:"Satisfacción, seguridad", p4p_nl_ind:"Outcomes, PROMS", p4p_es_ind:"Incipiente",
+    p4p_dev:"En desarrollo", p4p_adv:"Avanzado", p4p_adv2:"Avanzado", p4p_mid:"Intermedio", p4p_init:"Inicial",
+    glos_eyebrow:"Terminología", glos_title:"Glosario trilingüe",
+    glos_sub:"Términos esenciales de calidad y gestión de riesgos en español, alemán e inglés.",
+    gcat_all:"Todos", gcat_risk:"Gestión de Riesgos", gcat_qual:"Calidad", gcat_econ:"Economía", gcat_acred:"Acreditación",
+    footer_desc:"Plataforma educativa sobre calidad hospitalaria alemana en español.",
+    footer_source:"Datos: IQTIG 2022 · OECD Health Statistics · Bundesgesundheitsministerium",
+    footer_by:"Creado por <strong style='color:#fff'>Dina Rocío Tobar Morales</strong>",
+    footer_role:"Estudiante de Economía de la Salud · Alemania",
+  },
+  de: {
+    nav_qi:"Qualitätsindikatoren", nav_tools:"Werkzeuge", nav_glos:"Glossar",
+    hero_eyebrow:"Qualität & Risikomanagement · Deutsche Krankenhäuser",
+    hero_h1:'Der Leitfaden auf Spanisch über <em>Krankenhausqualität</em> in Deutschland',
+    hero_desc:"IQTIG-Indikatoren, klinisches Risikomanagement, Krankenhausakkreditierung und Qualitätsökonomie — alles auf Spanisch, mit deutschem Kontext.",
+    hero_cta1:"Qualitätsindikatoren erkunden", hero_cta2:"Werkzeuge ansehen",
+    stat1:"Stationäre Patienten erleiden vermeidbare unerwünschte Ereignisse in Deutschland",
+    stat2:"Geschätzte jährliche Kosten medizinischer Fehler im deutschen Krankenhaussystem",
+    stat3:"Obligatorische Qualitätsindikatoren, die vom IQTIG überwacht werden",
+    mod_eyebrow:"Plattformmodule", mod_title:"Alles, was Sie wissen müssen",
+    mod_sub:"Von IQTIG-Indikatoren bis zur Berechnung der Kosten unerwünschter Ereignisse — an einem Ort.",
+    m1_tag:"IQTIG-System", m1_title:"Krankenhausqualitätsindikatoren",
+    m1_desc:"Wie Deutschland die Versorgungsqualität misst und veröffentlicht.", m1_arrow:"Indikatoren anzeigen →",
+    m2_tag:"Klinisches Risiko", m2_title:"FMEA & Ursachenanalyse",
+    m2_desc:"Risikomanagement-Werkzeuge in deutschen Krankenhäusern.", m2_arrow:"Werkzeuge ansehen →",
+    m3_tag:"Ökonomie", m3_title:"Kosten unerwünschter Ereignisse",
+    m3_desc:"Interaktiver Rechner für wirtschaftliche Auswirkungen medizinischer Fehler.", m3_arrow:"Berechnen →",
+    m4_tag:"Akkreditierung", m4_title:"JCI vs. ISO vs. KTQ",
+    m4_desc:"Vergleich der wichtigsten Krankenhausakkreditierungssysteme.", m4_arrow:"Vergleichen →",
+    m5_tag:"P4P", m5_title:"Pay for Performance",
+    m5_desc:"Wie Krankenhausqualität mit Vergütungen in Deutschland verknüpft wird.", m5_arrow:"Erkunden →",
+    m6_tag:"Glossar", m6_title:"Terminologie ES · DE · EN",
+    m6_desc:"Schlüsselbegriffe des Qualitätsmanagements in drei Sprachen.", m6_arrow:"Glossar ansehen →",
+    iqtig_eyebrow:"Deutsches Qualitätssystem", iqtig_title:"IQTIG-Qualitätsindikatoren",
+    iqtig_sub:"Das IQTIG veröffentlicht jährlich Qualitätsindikatoren aller meldepflichtigen deutschen Krankenhäuser.",
+    iqtig_h3:"Wie funktioniert es?",
+    iqtig_p1:"Jedes Krankenhaus meldet klinische Daten je Eingriff. Das IQTIG berechnet Indikatoren und vergleicht sie mit nationalen Referenzwerten. Ergebnisse sind öffentlich in <strong>Qualitätsberichten</strong>.",
+    iqtig_p2:"Indikatoren haben einen <strong>Referenzwert</strong>. Wird dieser überschritten, muss das Krankenhaus dies im <em>Stellungnahmeverfahren</em> begründen.",
+    th_indicator:"Qualitätsindikator", th_area:"Bereich", th_ref:"Referenzwert", th_type:"Typ", th_trend:"Tendenz",
+    qi1_sub:"Sterblichkeit nach Herzinfarkt", qi1_area:"Kardiologie",
+    qi2_sub:"Kaiserschnittrate", qi2_area:"Geburtshilfe",
+    qi3_sub:"Wundinfektionsrate", qi3_area:"Chirurgie",
+    qi4_sub:"Komplikationen bei Hüftprothesen", qi4_area:"Orthopädie",
+    qi5_sub:"Thromboseprophylaxe", qi5_area:"Innere Medizin",
+    qi_result:"Ergebnis", qi_result2:"Ergebnis", qi_result3:"Ergebnis",
+    qi_process:"Prozess", qi_process2:"Prozess",
+    qi_improve:"Verbesserung", qi_improve2:"Verbesserung", qi_improve3:"Verbesserung", qi_improve4:"Verbesserung",
+    qi_stable:"stabil", iqtig_source:"Quelle: IQTIG Bundesauswertung 2022. Orientierungswerte.",
+    tools_eyebrow:"Interaktive Werkzeuge", tools_title:"Risikomanagement & Qualitätsökonomie",
+    tools_sub:"Erfahren Sie, wie diese Werkzeuge in der deutschen Krankenhauspraxis angewendet werden.",
+    tab_fmea:"FMEA", tab_calc:"Kostenkalkulator", tab_acred:"Akkreditierung", tab_p4p:"Pay for Performance (P4P)",
+    fmea_intro:"Die <strong>FMEA</strong> identifiziert potenzielle Fehler, bevor sie auftreten. Jeder Fehler wird nach <em>Schweregrad × Auftreten × Entdeckung</em> = RPN bewertet.",
+    fmea_h1:"Prozess / Potenzieller Fehler", fmea_h4:"Korrekturmaßnahme",
+    fmea_r1a:"Medikamentengabe", fmea_r1b:"Falsche Dosis", fmea_r1c:"Doppelkontrolle Pflege + Barcode-System",
+    fmea_r2a:"Patientenidentifikation", fmea_r2b:"Verwechslung von Patienten", fmea_r2c:"Armband mit Code + verbales 2-Identifikator-Protokoll",
+    fmea_r3a:"Chirurgische Desinfektion", fmea_r3b:"Unvollständiges Protokoll", fmea_r3c:"Obligatorische WHO-Surgical-Checklist",
+    fmea_r4a:"Schichtübergabe", fmea_r4b:"Verlust kritischer Informationen", fmea_r4c:"Standardisiertes SBAR-Protokoll",
+    fmea_r5a:"Patientenstürze", fmea_r5b:"Keine Risikobewertung", fmea_r5c:"Morse-Skala bei Aufnahme + Niedrigbett",
+    calc_intro:"Schätzen Sie die jährlichen wirtschaftlichen Auswirkungen unerwünschter Ereignisse in einem Krankenhaus.",
+    calc_camas:"Krankenhausbetten", calc_beds_unit:"Betten",
+    calc_ocup:"Belegungsrate (%)", calc_est:"Mittlere Verweildauer (Tage)", calc_days_unit:"Tage",
+    calc_ea:"Rate unerwünschter Ereignisse (%)", calc_prev:"% Vermeidbare unerwünschte Ereignisse",
+    calc_result_label:"Geschätzte Jahreskosten", calc_result_sub:"unerwünschte Ereignisse gesamt",
+    r_pac:"Patienten/Jahr", r_ea:"Unerwünschte Ereignisse/Jahr", r_prev:"Davon vermeidbar",
+    r_dias:"Zusätzliche Hospitalisierungstage", r_ahorro:"Vermeidbare Kosten (mögliche Einsparung)",
+    acred_intro:"Vergleich der drei wichtigsten Krankenhausakkreditierungssysteme in Deutschland.",
+    ac_origin:"Herkunft", ac_origin2:"Herkunft", ac_origin3:"Herkunft",
+    ac_std:"Standards", ac_std2:"Standards", ac_std3:"Standards",
+    ac_dur:"Dauer", ac_dur2:"Dauer", ac_dur3:"Dauer",
+    ac_cost:"Ca. Kosten", ac_cost2:"Ca. Kosten", ac_cost3:"Ca. Kosten",
+    ac_intl:"Internat. Anerkennung", ac_intl2:"Internat. Anerkennung", ac_intl3:"Internat. Anerkennung",
+    ac_safety:"Sicherheit", ac_safety2:"Sicherheit", ac_safety3:"Sicherheit",
+    ac_de:"Angepasst an DE", ac_de2:"Angepasst an DE", ac_de3:"Angepasst an DE",
+    ac_hosp:"Krankenhäuser DE", ac_hosp2:"Krankenhäuser DE", ac_hosp3:"Krankenhäuser DE",
+    ac_jci_origin:"USA · Global", ac_intl_label:"International", ac_de_label:"Deutschland",
+    ac_proc:"Prozesse / System", ac_ktq_std:"63 klinische Kriterien",
+    ac_3y:"3 Jahre", ac_3y2:"3 Jahre", ac_3y3:"3 Jahre",
+    ac_high:"✓ Sehr hoch", ac_high2:"✓ Hoch", ac_yes:"✓ Ja", ac_yes2:"✓ Ja", ac_yes3:"✓ Ja",
+    ac_partial:"✗ Teilweise", ac_no:"✗ Nicht spezifisch", ac_eu:"✗ Nur Europa", ac_full:"✓ Vollständig",
+    p4p_intro:"Pay for Performance verknüpft Krankenhausvergütungen mit Qualitätsindikatoren. Europäischer Vergleich:",
+    p4p_country:"Land", p4p_system:"System", p4p_pct:"% Vergütung an Qualität", p4p_indicators:"Indikatoren", p4p_maturity:"Reifegrad",
+    p4p_de:"Deutschland", p4p_uk:"Vereinigtes Königreich", p4p_fr:"Frankreich", p4p_nl:"Niederlande", p4p_es:"Spanien",
+    p4p_uk_ind:"Wiederaufnahmen, PROMS", p4p_fr_ind:"Zufriedenheit, Sicherheit", p4p_nl_ind:"Outcomes, PROMS", p4p_es_ind:"Anfänglich",
+    p4p_dev:"In Entwicklung", p4p_adv:"Fortgeschritten", p4p_adv2:"Fortgeschritten", p4p_mid:"Mittel", p4p_init:"Initial",
+    glos_eyebrow:"Terminologie", glos_title:"Dreisprachiges Glossar",
+    glos_sub:"Wesentliche Begriffe aus Qualität und Risikomanagement auf Spanisch, Deutsch und Englisch.",
+    gcat_all:"Alle", gcat_risk:"Risikomanagement", gcat_qual:"Qualität", gcat_econ:"Ökonomie", gcat_acred:"Akkreditierung",
+    footer_desc:"Bildungsplattform über deutsche Krankenhausqualität auf Spanisch.",
+    footer_source:"Daten: IQTIG 2022 · OECD Health Statistics · Bundesgesundheitsministerium",
+    footer_by:"Erstellt von <strong style='color:#fff'>Dina Rocío Tobar Morales</strong>",
+    footer_role:"Studentin der Gesundheitsökonomie · Deutschland",
+  },
+  en: {
+    nav_qi:"Quality Indicators", nav_tools:"Tools", nav_glos:"Glossary",
+    hero_eyebrow:"Quality & Risk Management · German Hospitals",
+    hero_h1:'The Spanish-language guide to <em>hospital quality</em> in Germany',
+    hero_desc:"IQTIG indicators, clinical risk management tools, hospital accreditation and quality economics — all in Spanish, with German context.",
+    hero_cta1:"Explore QI indicators", hero_cta2:"View tools",
+    stat1:"Hospitalized patients suffer preventable adverse events in Germany",
+    stat2:"Estimated annual cost of medical errors in the German hospital system",
+    stat3:"Mandatory quality indicators monitored by IQTIG",
+    mod_eyebrow:"Platform modules", mod_title:"Everything you need to know",
+    mod_sub:"From IQTIG indicators to calculating the cost of adverse events — all in one place.",
+    m1_tag:"IQTIG System", m1_title:"Hospital Quality Indicators",
+    m1_desc:"How Germany measures and publishes care quality.", m1_arrow:"View indicators →",
+    m2_tag:"Clinical Risk", m2_title:"FMEA & Root Cause Analysis",
+    m2_desc:"Risk management tools used in German hospitals.", m2_arrow:"View tools →",
+    m3_tag:"Economics", m3_title:"Cost of Adverse Events",
+    m3_desc:"Interactive calculator for the economic impact of medical errors.", m3_arrow:"Calculate →",
+    m4_tag:"Accreditation", m4_title:"JCI vs ISO vs KTQ",
+    m4_desc:"Comparison of the main hospital accreditation systems.", m4_arrow:"Compare →",
+    m5_tag:"P4P", m5_title:"Pay for Performance",
+    m5_desc:"How hospital quality is linked to payments in Germany.", m5_arrow:"Explore →",
+    m6_tag:"Glossary", m6_title:"Terminology ES · DE · EN",
+    m6_desc:"Key quality and risk management terms in three languages.", m6_arrow:"View glossary →",
+    iqtig_eyebrow:"German Quality System", iqtig_title:"IQTIG Quality Indicators",
+    iqtig_sub:"IQTIG annually publishes quality indicators for all reporting German hospitals.",
+    iqtig_h3:"How does it work?",
+    iqtig_p1:"Each hospital reports clinical data per procedure. IQTIG calculates indicators and compares them to national benchmarks. Results are public in <strong>Qualitätsberichte</strong>.",
+    iqtig_p2:"Indicators have a <strong>Referenzwert</strong> (reference value). If a hospital exceeds it, it must justify this in a process called <em>Stellungnahmeverfahren</em>.",
+    th_indicator:"QI Indicator", th_area:"Area", th_ref:"Reference value", th_type:"Type", th_trend:"Trend",
+    qi1_sub:"Post-infarction mortality", qi1_area:"Cardiology",
+    qi2_sub:"C-section rate", qi2_area:"Obstetrics",
+    qi3_sub:"Wound infection rate", qi3_area:"Surgery",
+    qi4_sub:"Hip prosthesis complications", qi4_area:"Orthopedics",
+    qi5_sub:"Thromboprophylaxis", qi5_area:"Internal Med.",
+    qi_result:"Outcome", qi_result2:"Outcome", qi_result3:"Outcome",
+    qi_process:"Process", qi_process2:"Process",
+    qi_improve:"improving", qi_improve2:"improving", qi_improve3:"improving", qi_improve4:"improving",
+    qi_stable:"stable", iqtig_source:"Source: IQTIG Bundesauswertung 2022. Indicative values.",
+    tools_eyebrow:"Interactive Tools", tools_title:"Risk management & quality economics",
+    tools_sub:"Learn how these tools are applied in German hospital practice.",
+    tab_fmea:"FMEA", tab_calc:"Cost calculator", tab_acred:"Accreditation", tab_p4p:"Pay for Performance (P4P)",
+    fmea_intro:"<strong>FMEA</strong> identifies potential failures before they occur. Each failure is scored by <em>Severity × Occurrence × Detection</em> = RPN.",
+    fmea_h1:"Process / Potential failure", fmea_h4:"Corrective measure",
+    fmea_r1a:"Medication administration", fmea_r1b:"Incorrect dose", fmea_r1c:"Double nurse check + barcode system",
+    fmea_r2a:"Patient identification", fmea_r2b:"Patient mix-up", fmea_r2c:"ID wristband + 2-identifier verbal protocol",
+    fmea_r3a:"Surgical disinfection", fmea_r3b:"Incomplete protocol", fmea_r3c:"Mandatory WHO surgical checklist",
+    fmea_r4a:"Shift handover", fmea_r4b:"Loss of critical information", fmea_r4c:"Standardized SBAR protocol",
+    fmea_r5a:"Patient falls", fmea_r5b:"No risk assessment", fmea_r5c:"Morse scale at admission + low bed",
+    calc_intro:"Estimate the annual economic impact of adverse events in a hospital.",
+    calc_camas:"Hospital beds", calc_beds_unit:"beds",
+    calc_ocup:"Occupancy rate (%)", calc_est:"Average length of stay (days)", calc_days_unit:"days",
+    calc_ea:"Adverse event rate (%)", calc_prev:"% Preventable adverse events",
+    calc_result_label:"Estimated annual cost", calc_result_sub:"total adverse events",
+    r_pac:"Patients/year", r_ea:"Adverse events/year", r_prev:"Of which preventable",
+    r_dias:"Extra hospitalization days", r_ahorro:"Preventable cost (possible savings)",
+    acred_intro:"Comparison of the three most relevant hospital accreditation systems in Germany.",
+    ac_origin:"Origin", ac_origin2:"Origin", ac_origin3:"Origin",
+    ac_std:"Standards", ac_std2:"Standards", ac_std3:"Standards",
+    ac_dur:"Duration", ac_dur2:"Duration", ac_dur3:"Duration",
+    ac_cost:"Approx. cost", ac_cost2:"Approx. cost", ac_cost3:"Approx. cost",
+    ac_intl:"Intl. recognition", ac_intl2:"Intl. recognition", ac_intl3:"Intl. recognition",
+    ac_safety:"Safety focus", ac_safety2:"Safety focus", ac_safety3:"Safety focus",
+    ac_de:"Adapted to DE", ac_de2:"Adapted to DE", ac_de3:"Adapted to DE",
+    ac_hosp:"DE hospitals", ac_hosp2:"DE hospitals", ac_hosp3:"DE hospitals",
+    ac_jci_origin:"USA · Global", ac_intl_label:"International", ac_de_label:"Germany",
+    ac_proc:"Processes / System", ac_ktq_std:"63 clinical criteria",
+    ac_3y:"3 years", ac_3y2:"3 years", ac_3y3:"3 years",
+    ac_high:"✓ Very high", ac_high2:"✓ High", ac_yes:"✓ Yes", ac_yes2:"✓ Yes", ac_yes3:"✓ Yes",
+    ac_partial:"✗ Partial", ac_no:"✗ Not specific", ac_eu:"✗ Europe only", ac_full:"✓ Fully",
+    p4p_intro:"Pay for performance links hospital payments to quality indicators. European comparison:",
+    p4p_country:"Country", p4p_system:"System", p4p_pct:"% payment tied to quality", p4p_indicators:"Indicators", p4p_maturity:"Maturity",
+    p4p_de:"Germany", p4p_uk:"United Kingdom", p4p_fr:"France", p4p_nl:"Netherlands", p4p_es:"Spain",
+    p4p_uk_ind:"Readmissions, PROMS", p4p_fr_ind:"Satisfaction, safety", p4p_nl_ind:"Outcomes, PROMS", p4p_es_ind:"Emerging",
+    p4p_dev:"Developing", p4p_adv:"Advanced", p4p_adv2:"Advanced", p4p_mid:"Intermediate", p4p_init:"Initial",
+    glos_eyebrow:"Terminology", glos_title:"Trilingual glossary",
+    glos_sub:"Essential quality and risk management terms in Spanish, German and English.",
+    gcat_all:"All", gcat_risk:"Risk Management", gcat_qual:"Quality", gcat_econ:"Economics", gcat_acred:"Accreditation",
+    footer_desc:"Educational platform on German hospital quality in Spanish.",
+    footer_source:"Data: IQTIG 2022 · OECD Health Statistics · Bundesgesundheitsministerium",
+    footer_by:"Created by <strong style='color:#fff'>Dina Rocío Tobar Morales</strong>",
+    footer_role:"Health Economics Student · Germany",
+  }
+};
+
+let currentLang = 'es';
+
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent === lang.toUpperCase()));
+  const t = T[lang];
+  document.querySelectorAll('[data-i]').forEach(el => {
+    const key = el.getAttribute('data-i');
+    if (t[key] !== undefined) el.innerHTML = t[key];
+  });
+  renderGlosario(currentGlosCat);
+}
+
+// ── TOOLS TABS ────────────────────────────────────────────────
+function showTool(id, btn) {
+  document.querySelectorAll('.tool-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tool-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── CALC ──────────────────────────────────────────────────────
+function calcCost() {
+  const camas = +document.getElementById('c-camas').value;
+  const ocup = +document.getElementById('c-ocup').value / 100;
+  const estancia = +document.getElementById('c-estancia').value;
+  const eaRate = +document.getElementById('c-ea').value / 100;
+  const prevRate = +document.getElementById('c-prev').value / 100;
+  const t = T[currentLang];
+  document.getElementById('v-camas').innerHTML = camas + ' <span data-i="calc_beds_unit">' + t.calc_beds_unit + '</span>';
+  document.getElementById('v-ocup').textContent = Math.round(+document.getElementById('c-ocup').value) + '%';
+  document.getElementById('v-estancia').innerHTML = estancia + ' <span data-i="calc_days_unit">' + t.calc_days_unit + '</span>';
+  document.getElementById('v-ea').textContent = (+document.getElementById('c-ea').value).toFixed(1) + '%';
+  document.getElementById('v-prev').textContent = Math.round(+document.getElementById('c-prev').value) + '%';
+  const pacientes = Math.round((camas * ocup * 365) / estancia);
+  const ea = Math.round(pacientes * eaRate);
+  const prev = Math.round(ea * prevRate);
+  const diasExtra = ea * 3.8;
+  const costoTotal = Math.round(diasExtra * 850);
+  const costoPrevenible = Math.round(prev * 3.8 * 850);
+  const fmt = n => n >= 1000000 ? '€' + (n/1000000).toFixed(1) + 'M' : n >= 1000 ? '€' + (n/1000).toFixed(0) + 'k' : '€' + n;
+  document.getElementById('r-total').textContent = fmt(costoTotal);
+  document.getElementById('r-pac').textContent = pacientes.toLocaleString('de-DE');
+  document.getElementById('r-ea').textContent = ea.toLocaleString('de-DE');
+  document.getElementById('r-prev').textContent = prev.toLocaleString('de-DE');
+  document.getElementById('r-dias').textContent = Math.round(diasExtra).toLocaleString('de-DE');
+  document.getElementById('r-ahorro').textContent = fmt(costoPrevenible);
+}
+calcCost();
+
+// ── GLOSARIO ──────────────────────────────────────────────────
+const glosarioData = {
+  es: [
+    { term:'Evento adverso', de:'Unerwünschtes Ereignis', en:'Adverse Event', cat:'riesgo', def:'Daño no intencionado causado al paciente durante la atención sanitaria, no relacionado con la enfermedad de base.' },
+    { term:'Análisis de Causa Raíz', de:'Ursachenanalyse / RCA', en:'Root Cause Analysis', cat:'riesgo', def:'Método sistemático para identificar las causas profundas de un evento adverso y prevenir su recurrencia.' },
+    { term:'FMEA', de:'FMEA / Risikoanalyse', en:'Failure Mode & Effects Analysis', cat:'riesgo', def:'Herramienta prospectiva que analiza posibles fallos en un proceso antes de que ocurran, calculando el RPN.' },
+    { term:'Número de Prioridad de Riesgo', de:'Risikoprioritätszahl (RPZ)', en:'Risk Priority Number (RPN)', cat:'riesgo', def:'Producto de Severidad × Ocurrencia × Detección. Valores ≥ 50 requieren acción prioritaria.' },
+    { term:'Seguridad del paciente', de:'Patientensicherheit', en:'Patient Safety', cat:'riesgo', def:'Disciplina que busca prevenir y reducir los daños causados por el sistema de atención sanitaria.' },
+    { term:'Indicador de Calidad', de:'Qualitätsindikator (QI)', en:'Quality Indicator', cat:'calidad', def:'Medida cuantitativa usada para evaluar y monitorizar la calidad asistencial en un área específica.' },
+    { term:'Valor de referencia', de:'Referenzwert', en:'Reference Value / Benchmark', cat:'calidad', def:'Umbral definido por el IQTIG que un hospital no debería superar. Superarlo activa el Stellungnahmeverfahren.' },
+    { term:'Informe de calidad', de:'Qualitätsbericht', en:'Quality Report', cat:'calidad', def:'Documento público obligatorio que cada hospital alemán debe publicar cada dos años con sus resultados de calidad.' },
+    { term:'IQTIG', de:'IQTIG', en:'IQTIG', cat:'calidad', def:'Institut für Qualitätssicherung und Transparenz im Gesundheitswesen. Gestiona la medición de calidad hospitalaria en Alemania.' },
+    { term:'Pago por desempeño', de:'Qualitätszuschlag / -abschlag', en:'Pay for Performance (P4P)', cat:'econ', def:'Mecanismo que vincula parte del pago hospitalario a resultados de calidad. En Alemania: suplementos o penalizaciones sobre el DRG.' },
+    { term:'Año de vida ajustado por calidad', de:'Qualitätsbereinigtes Lebensjahr', en:'Quality-Adjusted Life Year (QALY)', cat:'econ', def:'Métrica que combina años de vida ganados con su calidad (0–1). Usada en evaluaciones económicas de intervenciones.' },
+    { term:'Grupos de Diagnósticos Relacionados', de:'Diagnosis Related Groups (DRG)', en:'Diagnosis Related Groups', cat:'econ', def:'Sistema de clasificación de pacientes hospitalarios que agrupa casos de complejidad similar para estandarizar el pago.' },
+    { term:'Acreditación hospitalaria', de:'Krankenhausakkreditierung', en:'Hospital Accreditation', cat:'acred', def:'Proceso externo mediante el cual un organismo independiente evalúa si un hospital cumple estándares de calidad y seguridad.' },
+    { term:'KTQ', de:'KTQ — Kooperation für Transparenz und Qualität', en:'KTQ Certification', cat:'acred', def:'Sistema de acreditación desarrollado específicamente para el sistema sanitario alemán. Evaluación por pares (visitadores KTQ).' },
+  ],
+  de: [
+    { term:'Unerwünschtes Ereignis', de:'Unerwünschtes Ereignis', en:'Adverse Event', cat:'riesgo', def:'Unbeabsichtigter Schaden am Patienten während der Gesundheitsversorgung, der nicht mit der Grunderkrankung zusammenhängt.' },
+    { term:'Ursachenanalyse', de:'Ursachenanalyse / RCA', en:'Root Cause Analysis', cat:'riesgo', def:'Systematische Methode zur Identifizierung der Grundursachen eines unerwünschten Ereignisses, um Wiederholungen zu vermeiden.' },
+    { term:'FMEA', de:'FMEA / Risikoanalyse', en:'Failure Mode & Effects Analysis', cat:'riesgo', def:'Prospektives Werkzeug zur Analyse potenzieller Fehler in einem Prozess, bevor sie auftreten, durch Berechnung der RPZ.' },
+    { term:'Risikoprioritätszahl (RPZ)', de:'Risikoprioritätszahl (RPZ)', en:'Risk Priority Number (RPN)', cat:'riesgo', def:'Produkt aus Schweregrad × Auftreten × Entdeckung. Werte ≥ 50 erfordern prioritäre Maßnahmen.' },
+    { term:'Patientensicherheit', de:'Patientensicherheit', en:'Patient Safety', cat:'riesgo', def:'Disziplin zur Prävention und Reduzierung von Schäden, die durch das Gesundheitsversorgungssystem verursacht werden.' },
+    { term:'Qualitätsindikator (QI)', de:'Qualitätsindikator (QI)', en:'Quality Indicator', cat:'calidad', def:'Quantitatives Maß zur Bewertung und Überwachung der Versorgungsqualität in einem bestimmten Bereich.' },
+    { term:'Referenzwert', de:'Referenzwert', en:'Reference Value / Benchmark', cat:'calidad', def:'Vom IQTIG festgelegter Schwellenwert, den ein Krankenhaus nicht überschreiten sollte. Bei Überschreitung folgt das Stellungnahmeverfahren.' },
+    { term:'Qualitätsbericht', de:'Qualitätsbericht', en:'Quality Report', cat:'calidad', def:'Obligatorisches öffentliches Dokument, das jedes deutsche Krankenhaus alle zwei Jahre mit seinen Qualitätsergebnissen veröffentlichen muss.' },
+    { term:'IQTIG', de:'IQTIG', en:'IQTIG', cat:'calidad', def:'Institut für Qualitätssicherung und Transparenz im Gesundheitswesen. Verwaltet die Krankenhausqualitätsmessung in Deutschland.' },
+    { term:'Pay for Performance', de:'Qualitätszuschlag / -abschlag', en:'Pay for Performance (P4P)', cat:'econ', def:'Mechanismus, der einen Teil der Krankenhausvergütung an Qualitätsergebnisse knüpft. In Deutschland: Zu- oder Abschläge auf den DRG.' },
+    { term:'Qualitätsbereinigtes Lebensjahr', de:'Qualitätsbereinigtes Lebensjahr', en:'Quality-Adjusted Life Year (QALY)', cat:'econ', def:'Maßzahl, die gewonnene Lebensjahre mit deren Qualität (0–1) kombiniert. Verwendet in gesundheitsökonomischen Bewertungen.' },
+    { term:'Diagnosebezogene Fallgruppen', de:'Diagnosis Related Groups (DRG)', en:'Diagnosis Related Groups', cat:'econ', def:'System zur Klassifizierung von Krankenhauspatienten, das Fälle ähnlicher Komplexität zur Standardisierung der Vergütung gruppiert.' },
+    { term:'Krankenhausakkreditierung', de:'Krankenhausakkreditierung', en:'Hospital Accreditation', cat:'acred', def:'Externer Prozess, durch den eine unabhängige Organisation bewertet, ob ein Krankenhaus definierte Qualitäts- und Sicherheitsstandards erfüllt.' },
+    { term:'KTQ-Zertifizierung', de:'KTQ — Kooperation für Transparenz und Qualität', en:'KTQ Certification', cat:'acred', def:'Speziell für das deutsche Gesundheitssystem entwickeltes Akkreditierungssystem. Bewertung durch Peers (KTQ-Visitoren).' },
+  ],
+  en: [
+    { term:'Adverse Event', de:'Unerwünschtes Ereignis', en:'Adverse Event', cat:'riesgo', def:'Unintended harm caused to a patient during healthcare, not related to the underlying disease.' },
+    { term:'Root Cause Analysis', de:'Ursachenanalyse / RCA', en:'Root Cause Analysis', cat:'riesgo', def:'Systematic method to identify the deep causes of an adverse event and prevent its recurrence.' },
+    { term:'FMEA', de:'FMEA / Risikoanalyse', en:'Failure Mode & Effects Analysis', cat:'riesgo', def:'Prospective tool that analyses potential failures in a process before they occur, calculating the RPN.' },
+    { term:'Risk Priority Number (RPN)', de:'Risikoprioritätszahl (RPZ)', en:'Risk Priority Number (RPN)', cat:'riesgo', def:'Product of Severity × Occurrence × Detection. Values ≥ 50 require priority action.' },
+    { term:'Patient Safety', de:'Patientensicherheit', en:'Patient Safety', cat:'riesgo', def:'Discipline that seeks to prevent and reduce harms caused by the health care system to patients.' },
+    { term:'Quality Indicator', de:'Qualitätsindikator (QI)', en:'Quality Indicator', cat:'calidad', def:'Quantitative measure used to evaluate and monitor care quality in a specific area.' },
+    { term:'Reference Value / Benchmark', de:'Referenzwert', en:'Reference Value / Benchmark', cat:'calidad', def:'Threshold defined by IQTIG that a hospital should not exceed. Exceeding it triggers the Stellungnahmeverfahren.' },
+    { term:'Quality Report', de:'Qualitätsbericht', en:'Quality Report', cat:'calidad', def:'Mandatory public document that each German hospital must publish every two years with its quality results.' },
+    { term:'IQTIG', de:'IQTIG', en:'IQTIG', cat:'calidad', def:'Institut für Qualitätssicherung und Transparenz im Gesundheitswesen. Manages hospital quality measurement in Germany.' },
+    { term:'Pay for Performance (P4P)', de:'Qualitätszuschlag / -abschlag', en:'Pay for Performance (P4P)', cat:'econ', def:'Mechanism linking part of hospital payment to quality outcomes. In Germany: bonuses or penalties on the DRG.' },
+    { term:'Quality-Adjusted Life Year (QALY)', de:'Qualitätsbereinigtes Lebensjahr', en:'Quality-Adjusted Life Year (QALY)', cat:'econ', def:'Metric combining life years gained with their quality (0–1). Used in health economic evaluations of interventions.' },
+    { term:'Diagnosis Related Groups (DRG)', de:'Diagnosis Related Groups (DRG)', en:'Diagnosis Related Groups', cat:'econ', def:'Patient classification system grouping cases of similar complexity to standardize hospital payment.' },
+    { term:'Hospital Accreditation', de:'Krankenhausakkreditierung', en:'Hospital Accreditation', cat:'acred', def:'External process by which an independent body assesses whether a hospital meets defined quality and safety standards.' },
+    { term:'KTQ Certification', de:'KTQ — Kooperation für Transparenz und Qualität', en:'KTQ Certification', cat:'acred', def:'Accreditation system developed specifically for the German health system. Assessment by peers (KTQ visitors).' },
+  ]
+};
+
+let currentGlosCat = 'all';
+
+function renderGlosario(cat) {
+  currentGlosCat = cat;
+  const t = T[currentLang];
+  const catMap = { riesgo:'riesgo', calidad:'calidad', econ:'econ', acred:'acred' };
+  const data = glosarioData[currentLang];
+  const filtered = cat === 'all' ? data : data.filter(g => g.cat === cat);
+  document.getElementById('glosario-list').innerHTML = filtered.map(g => `
+    <div class="glosario-item">
+      <div class="glosario-term">
+        ${g.term}
+        <span class="glosario-de">${g.de}</span>
+        <span class="glosario-en">${g.en}</span>
+      </div>
+      <div class="glosario-def">${g.def}</div>
+    </div>
+  `).join('');
+}
+
+function filterGlosario(cat, btn) {
+  document.querySelectorAll('.glosario-cats button').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderGlosario(cat);
+}
+
+renderGlosario('all');
+</script>
+</body>
+</html>
